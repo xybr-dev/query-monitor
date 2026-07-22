@@ -1,0 +1,45 @@
+{
+    "name": "xybr-dev/query-monitor",
+    "description": "Report slow database queries exceeding a threshold as handled exceptions to Laravel Nightwatch.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "illuminate/contracts": "^12.0|^13.0",
+        "illuminate/database": "^12.0|^13.0",
+        "illuminate/support": "^12.0|^13.0"
+    },
+    "require-dev": {
+        "laravel/nightwatch": "^1.0",
+        "orchestra/testbench": "^10.0|^11.0",
+        "pestphp/pest": "^3.0"
+    },
+    "suggest": {
+        "laravel/nightwatch": "Required to force request sampling on slow queries for full Nightwatch trace context."
+    },
+    "autoload": {
+        "psr-4": {
+            "Xybr\\QueryMonitor\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Xybr\\QueryMonitor\\QueryMonitorServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
