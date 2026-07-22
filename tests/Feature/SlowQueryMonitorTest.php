@@ -110,4 +110,27 @@ describe('SlowQueryMonitor', function () {
 
         Exceptions::assertNotReported(SlowQueryDetectedException::class);
     });
+
+    it('handles slow queries without crashing when Nightwatch is absent', function () {
+        $monitor = Mockery::mock(SlowQueryMonitor::class)
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods()
+            ->shouldReceive('nightwatchAvailable')
+            ->andReturn(false)
+            ->getMock();
+
+        Exceptions::fake();
+
+        config()->set('query-monitor.threshold_ms', 0);
+
+        $monitor->boot();
+
+        DB::select('select 1 as value');
+        DB::select('select 2 as value');
+
+        $monitor->reportCollectedQueries();
+
+        Exceptions::assertReported(SlowQueryDetectedException::class);
+        expect(Exceptions::reported())->toHaveCount(2);
+    });
 });

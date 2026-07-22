@@ -73,7 +73,7 @@ class SlowQueryMonitor
     {
         $this->sampled = true;
 
-        if (! class_exists(\Laravel\Nightwatch\Facades\Nightwatch::class)) {
+        if (! $this->nightwatchAvailable()) {
             return;
         }
 
@@ -82,5 +82,10 @@ class SlowQueryMonitor
         } catch (Throwable) {
             //
         }
+    }
+
+    protected function nightwatchAvailable(): bool
+    {
+        return class_exists(\Laravel\Nightwatch\Facades\Nightwatch::class);
     }
 }
