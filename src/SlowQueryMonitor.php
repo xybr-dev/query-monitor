@@ -47,11 +47,36 @@ class SlowQueryMonitor
         $this->slowQueries = [];
         $this->sampled = false;
 
+        $groups = [];
+
         foreach ($queries as $query) {
+            $fp = new SlowQueryFingerprint($query->sql);
+            $key = $fp->normalized;
+
+            if (! isset($groups[$key])) {
+                $groups[$key] = [
+                    'queries' => [],
+                    'maxDuration' => 0.0,
+                    'fingerprint' => $fp,
+                ];
+            }
+
+            $groups[$key]['queries'][] = $query;
+            $groups[$key]['maxDuration'] = max($groups[$key]['maxDuration'], $query->time);
+        }
+
+        foreach ($groups as $group) {
+            $fp = $group['fingerprint'];
+            $groupQueries = $group['queries'];
+            $lastQuery = end($groupQueries);
+
             report(new SlowQueryDetectedException(
-                sql: $query->sql,
-                duration: $query->time,
-                connection: $query->connectionName,
+                sql: $lastQuery->sql,
+                duration: $group['maxDuration'],
+                connection: $lastQuery->connectionName,
+                fingerprint: $fp->normalized,
+                table: $fp->table,
+                occurrences: count($groupQueries),
             ));
         }
     }
